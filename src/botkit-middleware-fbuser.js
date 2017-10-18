@@ -33,10 +33,16 @@ module.exports = function (options) {
     const middleware = {};
     middleware.receive = function (bot, message, next) {
 			//only intercept messages from user
-			if (message.type !== 'message_received') {
+			let userId = null;
+			if (message.type === 'message_received') {
+				userId = message.user;
+			} else if (message.type === 'facebook_postback') {
+				userId = message.sender.id;
+			} else {
 				return next();
 			}
-        options.storage.users.get(message.user, function(err, user_data) {
+
+        options.storage.users.get(userId, function(err, user_data) {
 
             function finalize(usr) {
                 message.user_profile = usr;
@@ -49,7 +55,7 @@ module.exports = function (options) {
                     if (err)
                         next(err);
                     else{
-                        fb_user.id = message.user;
+                        fb_user.id = userId;
                         options.storage.users.save(fb_user, function (err) {
                             if (err)
                                 next(err);
