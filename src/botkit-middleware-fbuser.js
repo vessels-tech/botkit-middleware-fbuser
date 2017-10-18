@@ -34,7 +34,7 @@ module.exports = function (options) {
     middleware.receive = function (bot, message, next) {
 			//only intercept messages from user
 			if (message.type !== 'message_received') {
-				next();
+				return next();
 			}
         options.storage.users.get(message.user, function(err, user_data) {
 
