@@ -32,6 +32,10 @@ module.exports = function (options) {
 
     const middleware = {};
     middleware.receive = function (bot, message, next) {
+			//only intercept messages from user
+			if (message.type !== 'message_received') {
+				return;
+			}
         options.storage.users.get(message.user, function(err, user_data) {
 
             function finalize(usr) {
@@ -67,8 +71,6 @@ module.exports = function (options) {
                         user_data.timezone = fb_user.timezone;
                         user_data.gender = fb_user.gender;
                         user_data.timestamp = moment.now()
-                        user_data.is_payment_enabled = fb_user.is_payment_enabled;
-                        user_data.last_ad_referral = fb_user.last_ad_referral;
                         options.storage.users.save(user_data, function (err) {
                             logConsole('debug','Facebook profile refreshed:'+JSON.stringify(user_data))
                             if (err)
